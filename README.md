@@ -1,12 +1,12 @@
 #
 
-Health Check : @nestjs/terminus Check all services
+Health Check : @nestjs/terminus Check all services<br>
 Logger : Winston (Global Module)
 
 #
 Auth-Service : 
-    - Login/ Register/ Refresh Token/ Logout
-    - JWT Refresh Token (Hashed and stored in DB)
+    - Login/ Register/ Refresh Token/ Logout<br>
+    - JWT Refresh Token (Hashed and stored in DB)<br>
     - BigInt Serializer Interceptor (to handle BigInt in JSON responses)
 
     [OK] : 
@@ -28,16 +28,16 @@ Auth-Service :
         - Input sanitization
 
 # Commit Guidelines
-<type>(<scope>): <subject>
+`<type>(<scope>): <subject>`
 
-ex: feat(auth): add login endpoint
-feat: new feature
-fix: bug fix
-refactor: code refactoring
-style: code style changes (formatting, etc)
-docs: documentation changes
-test: adding or updating tests
-chore: other changes that don't modify src or test files
+ex: feat(auth): add login endpoint<br>
+feat: new feature<br>
+fix: bug fix<br>
+refactor: code refactoring<br>
+style: code style changes (formatting, etc)<br>
+docs: documentation changes<br>
+test: adding or updating tests<br>
+chore: other changes that don't modify src or test files<br>
 
 Scope:
 - (auth, user, common, etc)
