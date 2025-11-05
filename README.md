@@ -1,7 +1,10 @@
 #
 
 Health Check : @nestjs/terminus Check all services<br>
-Logger : Winston (Global Module)
+Logger : Winston (Global Module)<br>
+Wrapper Microservice Request : send request to microservice and handle response/ error in a standard way<br>
+Swagger Documentation : Auto-generate API docs with Swagger module<br>
+Exception Filter : Global exception filter to catch unhandled exceptions and return proper response<br>
 
 #
 Auth-Service : 

@@ -1,16 +1,20 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { Controller, UnauthorizedException } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { errorHandling } from 'src/common/constants/error-handling';
+import { LoggerService } from 'src/common/logger/logger.service';
 
-@Controller('auth')
+@Controller('')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private readonly logger: LoggerService,
+  ) {}
 
   @MessagePattern('auth.register')
-  async register(registerDto: RegisterDto) {
+  async register(@Payload() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
@@ -18,7 +22,7 @@ export class AuthController {
   async login(loginDto: LoginDto) {
     const user = await this.authService.validateUser(loginDto.email, loginDto.password);
     if (!user) {
-      return { error: errorHandling.invalidCredential };
+      throw new UnauthorizedException(errorHandling.invalidCredential.message);
     }
     return this.authService.login(user);
   }
@@ -57,5 +61,14 @@ export class AuthController {
   @MessagePattern('auth.logoutAllDevices')
   async logoutAllDevices({ userId }: { userId: string }) {
     return this.authService.logoutAllDevices(BigInt(userId));
+  }
+
+  @MessagePattern('health.ping')
+  async healthPing() {
+    return {
+      status: 'ok',
+      service: 'auth-service',
+      timestamp: new Date().toISOString(),
+    };
   }
 }

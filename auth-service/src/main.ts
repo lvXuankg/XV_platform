@@ -1,17 +1,23 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { getConfig } from './config';
 import { BigIntSerializerInterceptor } from './common/interceptors/bigint.serializer.interceptor';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 const logger = new Logger('Bootstrap');
 
 async function bootstrap() {
   const config = getConfig();
 
-  // Create RabbitMQ Microservice
+  // Dạy cho JSON.stringify cách xử lý BigInt
+  (BigInt.prototype as any).toJSON = function () {
+    return this.toString();
+  };
+
+  // --- 1. Cấu hình Microservice (RabbitMQ) ---
   const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
     transport: Transport.RMQ,
     options: {
@@ -23,14 +29,20 @@ async function bootstrap() {
     },
   });
 
-  // Create HTTP Server for Health Check & REST API
+  // Add BigInt Serializer Interceptor
+  microservice.useGlobalInterceptors(new BigIntSerializerInterceptor());
+
+  // rpc exception filter
+  microservice.useGlobalFilters(new AllExceptionsFilter());
+
+  // validationPipe for payload
+  microservice.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+
+  // --- 2. Cấu hình HTTP Server (Health Check) ---
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix(config.http.prefix);
 
-  // Add BigInt Serializer Interceptor
-  app.useGlobalInterceptors(new BigIntSerializerInterceptor());
-
-  // Start both microservice and HTTP server
+  // --- 3. Khởi chạy cả hai ---
   await microservice.listen();
   logger.log(`🚀 RabbitMQ Microservice connected to queue: ${config.rabbitmq.queue}`);
 

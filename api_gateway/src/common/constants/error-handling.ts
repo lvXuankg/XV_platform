@@ -88,8 +88,4 @@ export const errorHandling = {
     statusCode: 500, // Internal Server Error
     message: 'Đã có lỗi xảy ra với cơ sở dữ liệu',
   },
-  serviceMicroError: {
-    statusCode: 500,
-    message: 'Lỗi máy chủ nội bộ trong microservices',
-  },
 };

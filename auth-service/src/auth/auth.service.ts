@@ -98,6 +98,7 @@ export class AuthService {
         email,
         password: hashedPassword,
         username: generatedUsername,
+        role: 'member',
       },
     });
 
