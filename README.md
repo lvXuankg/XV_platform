@@ -8,6 +8,13 @@ Swagger Documentation : Auto-generate API docs with Swagger module<br>
 Exception Filter : Global exception filter to catch unhandled exceptions and return proper response<br>
 
 #
+
+Cursor-based Pagination : Implement cursor-based pagination for efficient data retrieval<br>
+    - Dont need skip 
+    - take advantage of indexed columns
+    - better performance for large datasets
+    
+#
 Auth-Service : 
     - Login/ Register/ Refresh Token/ Logout<br>
     - JWT Refresh Token (Hashed and stored in DB)<br>
@@ -50,12 +57,12 @@ Subject:
 - brief description of the change 
 
 # 
-- Api Gateway: 
+- `Api Gateway`: 
     - route requests to microservices<br>
     - handle authentication and authorization<br>
     - aggregate responses from multiple services<br>
 
-- Auth Service: 
+- `Auth Service`: 
     - login<br>
     - register<br>
     - refreshToken<br>
