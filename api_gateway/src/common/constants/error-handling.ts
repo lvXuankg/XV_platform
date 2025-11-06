@@ -14,6 +14,16 @@ export const errorHandling = {
     statusCode: 401, // Unauthorized
     message: 'Token xác thực không hợp lệ hoặc đã hết hạn',
   },
+  tokenExpired: {
+    statusCode: 401,
+    message: 'Token xác thực hết hạn',
+    code: 'ACCESS_TOKEN_EXPIRED',
+  },
+  missingRefreshToken: {
+    statusCode: 401,
+    message: 'Thiếu refresh Token',
+    code: 'REFRESH_TOKEN_MISSING',
+  },
   insufficientPermission: {
     statusCode: 403, // Forbidden
     message: 'Bạn không có quyền thực hiện hành động này',
@@ -87,5 +97,9 @@ export const errorHandling = {
   databaseError: {
     statusCode: 500, // Internal Server Error
     message: 'Đã có lỗi xảy ra với cơ sở dữ liệu',
+  },
+  jwtSecretError: {
+    statusCode: 500,
+    message: 'Thiếu JWT_SECRET trong biến môi trường',
   },
 };

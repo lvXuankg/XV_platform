@@ -5,7 +5,7 @@ export class RegisterDto {
   @IsNotEmpty({ message: validationMessages.isNotEmpty('email') })
   email: string;
 
-  @IsString()
+  @IsString({ message: validationMessages.isString('mật khẩu') })
   @MinLength(8, { message: validationMessages.minLength('mật khẩu', 8) })
   password: string;
 }

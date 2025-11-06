@@ -216,7 +216,7 @@ export class AuthService {
       where: { id: matchingToken.id },
     });
 
-    return { message: 'Logged out successfully' };
+    return { message: responseMessages.logoutOneDevice };
   }
 
   async logoutAllDevices(userId: bigint) {

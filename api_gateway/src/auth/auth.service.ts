@@ -40,4 +40,10 @@ export class AuthService {
       userId,
     });
   }
+
+  async verify(token: string) {
+    return sendMicroserviceRequest(this.client, 'auth.validate', {
+      token,
+    });
+  }
 }

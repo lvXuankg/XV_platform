@@ -1,16 +1,14 @@
-/**
- * Swagger Response Documentation Constants
- * Centralized response schemas for API documentation
- */
+// ==================================
+// SWAGGER RESPONSES - FULL VERSION
+// ==================================
 
 import { errorHandling } from './error-handling';
+import { responseMessages } from './response-message';
 import { validationMessages } from './validation-messages';
-
-// ============ AUTH RESPONSES ============
 
 const authRegisterSuccess = {
   status: 201,
-  description: 'User registered successfully',
+  description: responseMessages.registerSuccess,
   schema: {
     example: {
       id: '1',
@@ -21,48 +19,44 @@ const authRegisterSuccess = {
   },
 };
 
-const authRegisterBadRequest = {
+const authRegisterError = {
   status: 400,
-  description: 'Validation failed - invalid email or weak password',
+  description: 'Các lỗi có thể xảy ra khi đăng ký tài khoản',
   schema: {
-    example: {
-      statusCode: 400,
-      message: [
-        validationMessages.isEmail,
-        validationMessages.minLength('Mật khẩu', 8),
-      ],
-      error: 'Bad Request',
-    },
-  },
-};
-
-const authRegisterConflict = {
-  status: 409,
-  description: 'Email already registered',
-  schema: {
-    example: {
-      statusCode: 409,
-      message: 'Email already exists',
-      error: 'Conflict',
-    },
-  },
-};
-
-const authRegisterBusy = {
-  status: 500,
-  description: 'System error - server busy, please try again',
-  schema: {
-    example: {
-      statusCode: 500,
-      message: 'System is busy, please try again later',
-      error: 'Internal Server Error',
-    },
+    oneOf: [
+      {
+        example: {
+          statusCode: 400,
+          message: [
+            validationMessages.isEmail,
+            validationMessages.minLength('Mật khẩu', 8),
+          ],
+          error: 'Bad Request',
+        },
+      },
+      {
+        status: 409,
+        example: {
+          statusCode: 409,
+          message: errorHandling.duplicateEmail.message,
+          error: 'Conflict',
+        },
+      },
+      {
+        status: 500,
+        example: {
+          statusCode: 500,
+          message: errorHandling.internalServerError.message,
+          error: 'Internal Server Error',
+        },
+      },
+    ],
   },
 };
 
 const authLoginSuccess = {
   status: 200,
-  description: 'Đăng nhập thành công',
+  description: responseMessages.loginSuccess,
   schema: {
     example: {
       access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
@@ -76,99 +70,155 @@ const authLoginSuccess = {
   },
 };
 
-const authLoginUnauthorized = {
-  status: 401,
-  description: 'Sai email hoặc mật khẩu',
+const authLoginError = {
+  status: 400,
+  description: 'Các lỗi login có thể xảy ra',
   schema: {
-    example: {
-      statusCode: 401,
-      message: errorHandling.invalidCredential.message,
-      error: 'Unauthorized',
-    },
+    oneOf: [
+      {
+        status: 400,
+        example: {
+          statusCode: 400,
+          message: errorHandling.validationFailed.message,
+          error: 'Bad Request',
+        },
+      },
+      {
+        status: 401,
+        example: {
+          statusCode: 401,
+          message: errorHandling.invalidCredential.message,
+          error: 'Unauthorized',
+        },
+      },
+    ],
   },
 };
 
 const authRefreshSuccess = {
   status: 200,
-  description: 'Token refreshed successfully',
+  description: responseMessages.refreshTokenSuccess,
   schema: {
     example: {
-      access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-      refresh_token: 'new_refresh_token_abc123...',
-      user: {
-        id: '1',
-        email: 'user@example.com',
-        username: 'user1731000000',
-      },
+      id: '1',
+      email: 'user@example.com',
+      username: 'user1731000000',
     },
   },
 };
 
-const authTokenInvalid = {
-  status: 401,
-  description: 'Invalid or expired token',
+const authRefreshError = {
+  status: 400,
+  description: 'Các lỗi refresh token có thể xảy ra',
   schema: {
-    example: {
-      statusCode: 401,
-      message: 'Invalid or expired token',
-      error: 'Unauthorized',
-    },
+    oneOf: [
+      {
+        status: 400,
+        example: {
+          statusCode: 400,
+          message: errorHandling.missingRequiredFields.message,
+          error: 'Bad Request',
+        },
+      },
+      {
+        status: 401,
+        example: {
+          statusCode: 401,
+          message: errorHandling.invalidToken.message,
+          error: 'Unauthorized',
+        },
+      },
+      {
+        status: 401,
+        example: {
+          statusCode: 401,
+          message: errorHandling.tokenExpired.message,
+          code: errorHandling.tokenExpired.code,
+          error: 'Unauthorized',
+        },
+      },
+    ],
   },
 };
 
 const authLogoutSuccess = {
   status: 200,
-  description: 'Logged out successfully',
+  description: responseMessages.logoutOneDevice,
   schema: {
     example: {
-      message: 'Logged out successfully',
+      message: responseMessages.logoutOneDevice,
     },
   },
 };
 
 const authLogoutAllSuccess = {
   status: 200,
-  description: 'Logged out from all devices',
+  description: responseMessages.logoutAllDevices,
   schema: {
     example: {
-      message: 'Logged out from all devices',
+      message: responseMessages.logoutAllDevices,
       devicesLoggedOut: 3,
     },
   },
 };
 
-// ============ EXPORT GROUPED BY ENDPOINT ============
+const authLogoutError = {
+  status: 401,
+  description: 'Các lỗi logout có thể xảy ra',
+  schema: {
+    oneOf: [
+      {
+        status: 401,
+        example: {
+          statusCode: 401,
+          message: errorHandling.invalidToken.message,
+          error: 'Unauthorized',
+        },
+      },
+      {
+        status: 401,
+        example: {
+          statusCode: 401,
+          message: errorHandling.tokenExpired.message,
+          code: errorHandling.tokenExpired.code,
+          error: 'Unauthorized',
+        },
+      },
+      {
+        status: 500,
+        example: {
+          statusCode: 500,
+          message: errorHandling.internalServerError.message,
+          error: 'Internal Server Error',
+        },
+      },
+    ],
+  },
+};
+
+// ==========================
+// EXPORT GROUPED BY ENDPOINT
+// ==========================
 
 export const swaggerResponses = {
-  // Register Endpoint
   register: {
     success: authRegisterSuccess,
-    badRequest: authRegisterBadRequest,
-    conflict: authRegisterConflict,
-    busy: authRegisterBusy,
+    error: authRegisterError,
   },
-
-  // Login Endpoint
   login: {
     success: authLoginSuccess,
-    badRequest: authRegisterBadRequest,
-    unauthorized: authLoginUnauthorized,
+    error: authLoginError,
   },
-
-  // Refresh Token Endpoint
   refresh: {
     success: authRefreshSuccess,
-    unauthorized: authTokenInvalid,
+    error: authRefreshError,
   },
-
-  // Logout Endpoint
   logout: {
     success: authLogoutSuccess,
-    unauthorized: authTokenInvalid,
+    error: authLogoutError,
   },
-
-  // Logout All Devices Endpoint
   logoutAll: {
     success: authLogoutAllSuccess,
+    error: authLogoutError,
   },
 };
