@@ -1,5 +1,6 @@
 #
 
+Prisma : ORM for database management<br>
 Health Check : @nestjs/terminus Check all services<br>
 Logger : Winston (Global Module)<br>
 Wrapper Microservice Request : send request to microservice and handle response/ error in a standard way<br>
@@ -47,4 +48,45 @@ Scope:
 
 Subject:
 - brief description of the change 
-    
+
+# 
+- Api Gateway: 
+    - route requests to microservices<br>
+    - handle authentication and authorization<br>
+    - aggregate responses from multiple services<br>
+
+- Auth Service: 
+    - login<br>
+    - register<br>
+    - refreshToken<br>
+    - logout<br>
+    - logoutAllDevices<br>
+
+# [Dev] : Setup 
+`DotEnv`: <br>
+    - pnpm add dotenv<br>
+    - create .env file in root directory<br>
+    - load env variables in main.ts 'import 'dotenv/config';'<br>
+
+`Prisma`: <br>
+    - pnpm add prisma @prisma/client<br>
+    - pnpm prisma init<br>
+    - configure datasource in .env<br>
+    - pnpm prisma db pull --schema src/prisma/schema.prisma<br>
+    - pnpm prisma generate --schema src/prisma/schema.prisma<br>
+
+`Health Check`:<br>
+    - pnpm add @nestjs/terminus @nestjs/axios<br>
+    - create HealthModule and healthInficators : rabbitmq, database, etc...<br>
+    - add HealthController with /health endpoint<br>
+
+`Microservice`: <br>
+    - pnpm add @nestjs/microservices amqplib amqp-connection-manager<br>
+    - if service config main.ts with microservice options<br>
+    - create api gateway to route requests to microservices<br>
+
+`Logger` : <br>
+    - pnpm add winston winston-daily-rotate-file<br>
+    - pnpm add -D @types/winston <br>
+    - create LoggerModule as global module<br>
+
