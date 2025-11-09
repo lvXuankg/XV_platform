@@ -402,4 +402,88 @@ export class UserService {
       data: result,
     };
   }
+
+  async getFollowingsOfUser(
+    userId: bigint,
+    cursor?: string,
+    limit = getConfig().system.quantityUserResponse as number,
+  ) {
+    // Kiểm tra user tồn tại
+    const userExists = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+    if (!userExists) {
+      throw new NotFoundException(errorHandling.userNotFound.message);
+    }
+
+    // Sanitize limit: min 1, max 100
+    const sanitizedLimit = Math.min(Math.max(parseInt(String(limit)), 1), 100);
+
+    // Trả danh sách người mà userId đang theo dõi (action_types = 'follow')
+    return this.paginationService.paginate({
+      model: this.prisma.actionUsers,
+      where: {
+        user_id: userId,
+        action_types: 'follow',
+      },
+      select: {
+        target_user: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            name: true,
+            avatar_url: true,
+          },
+        },
+        created_at: true,
+      },
+      orderBy: { id: 'asc' },
+      cursor,
+      limit: sanitizedLimit,
+    });
+  }
+
+  async getFollowersOfUser(
+    userId: bigint,
+    cursor?: string,
+    limit = getConfig().system.quantityUserResponse as number,
+  ) {
+    // Kiểm tra user tồn tại
+    const userExists = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+    if (!userExists) {
+      throw new NotFoundException(errorHandling.userNotFound.message);
+    }
+
+    // Sanitize limit: min 1, max 100
+    const sanitizedLimit = Math.min(Math.max(parseInt(String(limit)), 1), 100);
+
+    // Trả danh sách những người đang theo dõi userId (action_types = 'follow')
+    return this.paginationService.paginate({
+      model: this.prisma.actionUsers,
+      where: {
+        target_user_id: userId,
+        action_types: 'follow',
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            name: true,
+            avatar_url: true,
+          },
+        },
+        created_at: true,
+      },
+      orderBy: { id: 'asc' },
+      cursor,
+      limit: sanitizedLimit,
+    });
+  }
 }

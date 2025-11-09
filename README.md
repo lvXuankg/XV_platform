@@ -1,99 +1,128 @@
-#
-
-Prisma : ORM for database management<br>
-Health Check : @nestjs/terminus Check all services<br>
-Logger : Winston (Global Module)<br>
-Wrapper Microservice Request : send request to microservice and handle response/ error in a standard way<br>
-Swagger Documentation : Auto-generate API docs with Swagger module<br>
-Exception Filter : Global exception filter to catch unhandled exceptions and return proper response<br>
-
-#
-
-Cursor-based Pagination : Implement cursor-based pagination for efficient data retrieval<br>
-    - Dont need skip 
-    - take advantage of indexed columns
-    - better performance for large datasets
-    
-#
-Auth-Service : 
-    - Login/ Register/ Refresh Token/ Logout<br>
-    - JWT Refresh Token (Hashed and stored in DB)<br>
-    - BigInt Serializer Interceptor (to handle BigInt in JSON responses)
-
-    [OK] : 
-        - secret, expiry (15m)
-        - bcrypt hasing password + refresh tokens       
-        - multiple device login support
-        - custom error handling with exceptions
-        - input validation with class-validator
-        - logout all devices
-    [MISSING/IMPROVE] :
-        - rate limiting 
-        - loggin and monitoring
-        - cors and security headers
-        - email verification
-        - password reset
-        - 2FA
-        - Audit logging
-        - global exception handling 
-        - Input sanitization
-
-# Commit Guidelines
-`<type>(<scope>): <subject>`
-
-ex: feat(auth): add login endpoint<br>
-feat: new feature<br>
-fix: bug fix<br>
-refactor: code refactoring<br>
-style: code style changes (formatting, etc)<br>
-docs: documentation changes<br>
-test: adding or updating tests<br>
-chore: other changes that don't modify src or test files<br>
-
-Scope:
-- (auth, user, common, etc)
-
-Subject:
-- brief description of the change 
-
 # 
-- `Api Gateway`: 
-    - route requests to microservices<br>
-    - handle authentication and authorization<br>
-    - aggregate responses from multiple services<br>
 
-- `Auth Service`: 
-    - login<br>
-    - register<br>
-    - refreshToken<br>
-    - logout<br>
-    - logoutAllDevices<br>
+## Technologies
 
-# [Dev] : Setup 
-`DotEnv`: <br>
-    - pnpm add dotenv<br>
-    - create .env file in root directory<br>
-    - load env variables in main.ts 'import 'dotenv/config';'<br>
+- **Prisma**: ORM for database management
+- **Health Check**: @nestjs/terminus - Check all services
+- **Logger**: Winston (Global Module)
+- **Wrapper Microservice Request**: Send request to microservice and handle response/error in a standard way
+- **Swagger Documentation**: Auto-generate API docs with Swagger module
+- **Exception Filter**: Global exception filter to catch unhandled exceptions and return proper response
 
-`Prisma`: <br>
-    - pnpm add prisma @prisma/client<br>
-    - pnpm prisma init<br>
-    - configure datasource in .env<br>
-    - pnpm prisma db pull --schema src/prisma/schema.prisma<br>
-    - pnpm prisma generate --schema src/prisma/schema.prisma<br>
+---
 
-`Health Check`:<br>
-    - pnpm add @nestjs/terminus @nestjs/axios<br>
-    - create HealthModule and healthInficators : rabbitmq, database, etc...<br>
-    - add HealthController with /health endpoint<br>
+## Features
 
-`Microservice`: <br>
-    - pnpm add @nestjs/microservices amqplib amqp-connection-manager<br>
-    - if service config main.ts with microservice options<br>
-    - create api gateway to route requests to microservices<br>
+### Cursor-Based Pagination
+Implement cursor-based pagination for efficient data retrieval
+- No need for SKIP operations
+- Takes advantage of indexed columns
+- Better performance for large datasets
 
-`Logger` : <br>
-    - pnpm add winston winston-daily-rotate-file<br>
-    - pnpm add -D @types/winston <br>
-    - create LoggerModule as global module<br>
+---
+
+## Services
+
+### Auth Service
+- Login / Register / Refresh Token / Logout
+- JWT Refresh Token (Hashed and stored in DB)
+- BigInt Serializer Interceptor (to handle BigInt in JSON responses)
+
+**Status:**
+- ✅ Secret and expiry (15m)
+- ✅ Bcrypt hashing password + refresh tokens
+- ✅ Multiple device login support
+- ✅ Custom error handling with exceptions
+- ✅ Input validation with class-validator
+- ✅ Logout all devices
+
+**Missing/Improvements:**
+- Rate limiting
+- Logging and monitoring
+- CORS and security headers
+- Email verification
+- Password reset
+- 2FA
+- Audit logging
+- Global exception handling
+- Input sanitization
+
+### API Gateway
+- Route requests to microservices
+- Handle authentication and authorization
+- Aggregate responses from multiple services
+
+### User Service
+- User profile management (CRUD operations)
+- Cursor-based pagination for user search
+- Follow/Unfollow functionality
+- Block/Unblock users
+- Report/Unreport users
+- Comprehensive DTOs with validation
+- Production-grade error handling
+
+---
+
+## Commit Guidelines
+
+Format: `<type>(<scope>): <subject>`
+
+**Example:** `feat(auth): add login endpoint`
+
+### Types:
+- `feat` - New feature
+- `fix` - Bug fix
+- `refactor` - Code refactoring
+- `style` - Code style changes (formatting, etc)
+- `docs` - Documentation changes
+- `test` - Adding or updating tests
+- `chore` - Other changes that don't modify src or test files
+
+### Scopes:
+- auth, user, common, gateway, prisma, etc
+
+### Subject:
+- Brief description of the change
+
+---
+
+## Development Setup
+
+### DotEnv
+```bash
+pnpm add dotenv
+# Create .env file in root directory
+# Load env variables in main.ts: import 'dotenv/config';
+```
+
+### Prisma
+```bash
+pnpm add prisma @prisma/client
+pnpm prisma init
+# Configure datasource in .env
+pnpm prisma db pull --schema src/prisma/schema.prisma
+pnpm prisma generate --schema src/prisma/schema.prisma
+```
+
+### Health Check
+```bash
+pnpm add @nestjs/terminus @nestjs/axios
+# Create HealthModule and healthIndicators: rabbitmq, database, etc...
+# Add HealthController with /health endpoint
+```
+
+### Microservice
+```bash
+pnpm add @nestjs/microservices amqplib amqp-connection-manager
+# Configure microservice options in main.ts
+# Create api gateway to route requests to microservices
+```
+
+### Logger
+```bash
+pnpm add winston winston-daily-rotate-file
+pnpm add -D @types/winston
+# Create LoggerModule as global module
+```
+
 
