@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
 import { PrismaHealthIndicator } from './prisma.health';
 import { RabbitMQHealthIndicator } from './rabbitmq.health';
+import { MessagePattern } from '@nestjs/microservices';
 
 @Controller('health')
 export class HealthController {
@@ -18,5 +19,14 @@ export class HealthController {
       () => this.prismaHealth.isHealthy('database'),
       () => this.rabbitHealth.isHealthy('rabbitmq'),
     ]);
+  }
+
+  @MessagePattern('health.ping')
+  async healthPing() {
+    return {
+      status: 'ok',
+      service: 'user-service',
+      timestamp: new Date().toISOString(),
+    };
   }
 }

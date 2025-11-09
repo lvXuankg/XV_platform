@@ -11,6 +11,7 @@ import { PaginationService } from 'src/common/pagination/pagination.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { BlockUserDto } from './dto/block-user.dto';
 import { ReportUserDto } from './dto/report-user.dto';
+import { FindUsersQueryDto } from './dto/find-users-query.dto';
 import { responseMessages } from 'src/common/constants/response-message';
 
 @Injectable()
@@ -37,6 +38,8 @@ export class UserService {
   }
 
   async typingFindUsers(text: string) {
+    const limit = getConfig().system.quantityUserResponse as number;
+
     const users = await this.prisma.user.findMany({
       where: {
         OR: [
@@ -64,22 +67,26 @@ export class UserService {
         name: true,
         avatar_url: true,
       },
-      take: getConfig().system.quantityUserResponse as number,
+      take: limit + 1,
     });
 
-    return users.map((user) => JSON.stringify(user));
+    let isMore = false;
+
+    if (users.length > limit) {
+      isMore = true;
+      users.splice(limit);
+    }
+
+    return {
+      isMore,
+      users,
+    };
   }
 
-  async findUsers(
-    text: string,
-    cursor?: string,
-    limit?: number,
-    order: 'asc' | 'desc' = 'asc',
-  ) {
-    const sanitizedText = (text || '').trim().substring(0, 100);
-    const sanitizedLimit = limit
-      ? Math.min(Math.max(parseInt(String(limit)), 1), 100)
-      : getConfig().system.quantityUserResponse;
+  async findUsers(dto: FindUsersQueryDto) {
+    const sanitizedText = (dto.text || '').trim().substring(0, 100);
+    const sanitizedLimit = Math.min(Math.max(dto.limit || 10, 1), 100);
+    const order = dto.order || 'asc';
 
     return this.paginationService.paginate({
       model: this.prisma.user,
@@ -115,13 +122,15 @@ export class UserService {
       orderBy: {
         id: order,
       },
-      cursor,
+      cursor: dto.cursor,
       limit: sanitizedLimit,
     });
   }
 
   async updateProfile(userId: bigint, data: UpdateProfileDto) {
-    const { username, email } = data;
+    const { username, email } = data || {};
+
+    console.log(data);
 
     if (username) {
       const existingUser = await this.prisma.user.findFirst({
@@ -428,7 +437,7 @@ export class UserService {
         action_types: 'follow',
       },
       select: {
-        target_user: {
+        User_ActionUsers_target_user_idToUser: {
           select: {
             id: true,
             email: true,
@@ -437,9 +446,9 @@ export class UserService {
             avatar_url: true,
           },
         },
-        created_at: true,
+        time_action: true,
       },
-      orderBy: { id: 'asc' },
+      orderBy: { target_user_id: 'asc' },
       cursor,
       limit: sanitizedLimit,
     });
@@ -470,7 +479,7 @@ export class UserService {
         action_types: 'follow',
       },
       select: {
-        user: {
+        User_ActionUsers_user_idToUser: {
           select: {
             id: true,
             email: true,
@@ -479,9 +488,9 @@ export class UserService {
             avatar_url: true,
           },
         },
-        created_at: true,
+        time_action: true,
       },
-      orderBy: { id: 'asc' },
+      orderBy: { user_id: 'asc' },
       cursor,
       limit: sanitizedLimit,
     });

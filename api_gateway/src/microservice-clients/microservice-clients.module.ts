@@ -17,6 +17,17 @@ import { getConfig } from 'src/config';
           },
         },
       },
+      {
+        name: 'USER_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: getConfig().userService.urls,
+          queue: getConfig().userService.queue,
+          queueOptions: {
+            durable: getConfig().userService.durable,
+          },
+        },
+      },
     ]),
   ],
   exports: [ClientsModule],

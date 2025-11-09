@@ -1,9 +1,16 @@
 export interface AppConfig {
   authService: AuthRabbitMQ;
+  userService: UserRabbitMQ;
   http: HttpConfig;
 }
 
 export interface AuthRabbitMQ {
+  urls: string[];
+  queue: string;
+  durable: boolean;
+}
+
+export interface UserRabbitMQ {
   urls: string[];
   queue: string;
   durable: boolean;
@@ -24,6 +31,14 @@ export const getConfig = (): AppConfig => ({
     ],
     queue: process.env.AUTH_SERVICE_RABBITMQ_QUEUE || 'auth_queue',
     durable: process.env.AUTH_SERVICE_RABBITMQ_OPTION_DURABLE === 'true',
+  },
+  userService: {
+    urls: [
+      process.env.USER_SERVICE_RABBITMQ_URL ||
+        'amqp://admin:1234@localhost:5672',
+    ],
+    queue: process.env.USER_SERVICE_RABBITMQ_QUEUE || 'auth_queue',
+    durable: process.env.USER_SERVICE_RABBITMQ_OPTION_DURABLE === 'true',
   },
   http: {
     port: parseInt(process.env.PORT || '8080', 10),

@@ -1,36 +1,30 @@
 import {
   IsString,
   IsOptional,
-  IsNumber,
+  IsNumberString,
   Min,
   Max,
   IsIn,
-  MinLength,
-  MaxLength,
 } from 'class-validator';
 import { validationMessages } from 'src/common/constants/validation-messages';
 
 export class FindUsersQueryDto {
   @IsString({ message: validationMessages.isString('text') })
-  @MinLength(1, { message: validationMessages.minLength('text', 1) })
-  @MaxLength(100, { message: validationMessages.maxLength('text', 100) })
   text: string;
 
   @IsOptional()
-  @IsString({ message: validationMessages.isString('cursor') })
+  @IsNumberString({}, { message: validationMessages.isNumberString('Cursor') })
   cursor?: string;
 
   @IsOptional()
-  @IsNumber({}, { message: validationMessages.isNumber('limit') })
-  @Min(1, { message: validationMessages.min('limit', 1) })
-  @Max(100, { message: validationMessages.max('limit', 100) })
-  limit?: number = 10;
+  @IsNumberString({}, { message: validationMessages.isNumberString('Limit') })
+  limit?: string;
 
   @IsOptional()
   @IsIn(['asc', 'desc'], {
-    message: validationMessages.isIn('order', ['asc', 'desc']),
+    message: validationMessages.isIn('Order', ['asc', 'desc']),
   })
-  order?: 'asc' | 'desc' = 'asc';
+  order?: 'asc' | 'desc';
 }
 
 export class PaginatedUserDto {

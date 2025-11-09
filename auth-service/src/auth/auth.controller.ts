@@ -5,6 +5,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { errorHandling } from 'src/common/constants/error-handling';
 import { LoggerService } from 'src/common/logger/logger.service';
+import { AUTH_MESSAGE_PATTERNS } from 'src/common/constants/auth.message-pattern';
 
 @Controller('')
 export class AuthController {
@@ -13,13 +14,19 @@ export class AuthController {
     private readonly logger: LoggerService,
   ) {}
 
-  @MessagePattern('auth.register')
+  /**
+   * Đăng ký tài khoản mới
+   */
+  @MessagePattern(AUTH_MESSAGE_PATTERNS.REGISTER)
   async register(@Payload() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
-  @MessagePattern('auth.login')
-  async login(loginDto: LoginDto) {
+  /**
+   * Đăng nhập
+   */
+  @MessagePattern(AUTH_MESSAGE_PATTERNS.LOGIN)
+  async login(@Payload() loginDto: LoginDto) {
     const user = await this.authService.validateUser(loginDto.email, loginDto.password);
     if (!user) {
       throw new UnauthorizedException(errorHandling.invalidCredential.message);
@@ -27,22 +34,28 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @MessagePattern('auth.refreshToken')
-  async refreshToken({ refreshToken, userId }: { refreshToken: string; userId: string }) {
-    return this.authService.refreshToken(refreshToken, BigInt(userId));
+  /**
+   * Làm mới access token
+   */
+  @MessagePattern(AUTH_MESSAGE_PATTERNS.REFRESH_TOKEN)
+  async refreshToken(@Payload() payload: { refreshToken: string; userId: string }) {
+    return this.authService.refreshToken(payload.refreshToken, BigInt(payload.userId));
   }
 
-  @MessagePattern('auth.validate')
-  async validateToken({ token }: { token: string }) {
+  /**
+   * Xác thực token JWT
+   */
+  @MessagePattern(AUTH_MESSAGE_PATTERNS.VERIFY)
+  async validateToken(@Payload() payload: { token: string }) {
     try {
       // Verify và decode JWT
-      const payload = await this.authService.verifyToken(token);
+      const jwtPayload = await this.authService.verifyToken(payload.token);
       return {
         valid: true,
-        payload,
+        payload: jwtPayload,
         user: {
-          id: payload.sub,
-          email: payload.email,
+          id: jwtPayload.sub,
+          email: jwtPayload.email,
         },
       };
     } catch (error) {
@@ -53,22 +66,19 @@ export class AuthController {
     }
   }
 
-  @MessagePattern('auth.logout')
-  async logout({ refreshToken, userId }: { refreshToken: string; userId: string }) {
-    return this.authService.logout(refreshToken, BigInt(userId));
+  /**
+   * Đăng xuất
+   */
+  @MessagePattern(AUTH_MESSAGE_PATTERNS.LOGOUT)
+  async logout(@Payload() payload: { refreshToken: string; userId: string }) {
+    return this.authService.logout(payload.refreshToken, BigInt(payload.userId));
   }
 
-  @MessagePattern('auth.logoutAllDevices')
-  async logoutAllDevices({ userId }: { userId: string }) {
-    return this.authService.logoutAllDevices(BigInt(userId));
-  }
-
-  @MessagePattern('health.ping')
-  async healthPing() {
-    return {
-      status: 'ok',
-      service: 'auth-service',
-      timestamp: new Date().toISOString(),
-    };
+  /**
+   * Đăng xuất tất cả thiết bị
+   */
+  @MessagePattern(AUTH_MESSAGE_PATTERNS.LOGOUT_ALL_DEVICES)
+  async logoutAllDevices(@Payload() payload: { userId: string }) {
+    return this.authService.logoutAllDevices(BigInt(payload.userId));
   }
 }

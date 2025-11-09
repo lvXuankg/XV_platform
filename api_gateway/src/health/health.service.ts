@@ -9,6 +9,7 @@ import { LoggerService } from '../common/logger/logger.service';
 export class HealthService {
   constructor(
     @Inject('AUTH_SERVICE') private authServiceClient: ClientProxy,
+    @Inject('USER_SERVICE') private userServiceClient: ClientProxy,
     private readonly logger: LoggerService,
   ) {}
 
@@ -71,6 +72,13 @@ export class HealthService {
       this.authServiceClient,
     );
     services.push(authServiceHealth);
+
+    // Check User Service
+    const userServiceHealth = await this.checkServiceHealth(
+      'User Service',
+      this.userServiceClient,
+    );
+    services.push(userServiceHealth);
 
     // Determine overall status
     const allHealthy = services.every((s) => s.status === 'up');

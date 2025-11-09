@@ -12,6 +12,7 @@ import { responseMessages } from 'src/common/constants/response-message';
 export interface JwtPayload {
   sub: string;
   email: string;
+  role?: string;
   iat?: number;
   exp?: number;
 }
@@ -117,7 +118,7 @@ export class AuthService {
   }
 
   async login(user: User) {
-    const payload: JwtPayload = { sub: user.id.toString(), email: user.email };
+    const payload: JwtPayload = { sub: user.id.toString(), email: user.email, role: user.role };
 
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = await this.generateRefreshToken(user.id);
@@ -129,6 +130,7 @@ export class AuthService {
         id: user.id.toString(),
         email: user.email,
         username: user.username,
+        role: user.role,
       },
     };
   }
