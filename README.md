@@ -21,45 +21,187 @@ Implement cursor-based pagination for efficient data retrieval
 
 ---
 
-## Services
+## Services Architecture
+
+### API Gateway
+**Services:**
+- Auth-Service ✅
+- User-Service 🔄
+- Dictionary-Service ⏳
+- Content-Service ⏳
+- Media-Service ⏳
+- Gamification-Service ⏳
+- Notification-Service ⏳
+
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| Tiếp nhận request của client | ❌ |
+| Tổng hợp các service | 🔄 |
+| Kiểm tra danh tính hợp lệ (JWT) | ✅ |
+| Rate limiting | ⏳ |
+| IP WhiteList | ⏳ |
+| Caching | ⏳ |
+| Load Balancing | ⏳ |
+| CORS | ⏳ |
+
+---
 
 ### Auth Service
-- Login / Register / Refresh Token / Logout
-- JWT Refresh Token (Hashed and stored in DB)
-- BigInt Serializer Interceptor (to handle BigInt in JSON responses)
+**Entities:**
+- RefreshToken
+- User (Đăng nhập, Đăng ký)
+- UserDevice
+- LoginHistory
 
-**Status:**
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| Đăng ký | ✅ |
+| Đăng nhập | ✅ |
+| Lấy accessToken mới | ✅ |
+| Đăng xuất | ✅ |
+| Đăng xuất tất cả thiết bị | ✅ |
+
+**Tính năng:**
+- ✅ JWT Refresh Token (Hashed and stored in DB)
 - ✅ Secret and expiry (15m)
 - ✅ Bcrypt hashing password + refresh tokens
 - ✅ Multiple device login support
 - ✅ Custom error handling with exceptions
 - ✅ Input validation with class-validator
-- ✅ Logout all devices
+- ✅ BigInt Serializer Interceptor (handle BigInt in JSON responses)
 
-**Missing/Improvements:**
+**Cần bổ sung:**
 - Rate limiting
-- Logging and monitoring
-- CORS and security headers
 - Email verification
 - Password reset
 - 2FA
 - Audit logging
-- Global exception handling
-- Input sanitization
 
-### API Gateway
-- Route requests to microservices
-- Handle authentication and authorization
-- Aggregate responses from multiple services
+---
 
 ### User Service
-- User profile management (CRUD operations)
-- Cursor-based pagination for user search
-- Follow/Unfollow functionality
-- Block/Unblock users
-- Report/Unreport users
-- Comprehensive DTOs with validation
-- Production-grade error handling
+**Entities:**
+- User
+- ActionUser
+
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| Lấy thông tin người dùng | ✅ |
+| Gợi ý typing tìm người dùng | ✅ |
+| Tìm người dùng | ✅ |
+| Cập nhật thông tin | ✅ |
+| Theo dõi người dùng | ✅ |
+| Hủy theo dõi | ✅ |
+| Chặn người dùng | ✅ |
+| Bỏ chặn | ✅ |
+| Báo cáo người dùng | ✅ |
+| Hủy báo cáo | ✅ |
+| Lấy người đang theo dõi (infinity-scroll) | ✅ |
+| Lấy người theo dõi mình (infinity-scroll) | ✅ |
+| Cập nhật cài đặt (thông báo, riêng tư) | 🔄 |
+
+**Tính năng:**
+- ✅ User profile management (CRUD operations)
+- ✅ Cursor-based pagination for user search
+- ✅ Follow/Unfollow functionality
+- ✅ Block/Unblock users
+- ✅ Report/Unreport users
+- ✅ Comprehensive DTOs with validation
+- ✅ Production-grade error handling
+
+---
+
+### Dictionary Service
+**Entities:**
+- Word (id, thuật ngữ, phiên âm, đường dẫn âm thanh)
+- Meanings (id, wordId, loại từ vựng, định nghĩa)
+
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| Tra cứu từ (chính xác / gần đúng) | ⏳ |
+| Thêm từ mới | ⏳ |
+| Thêm nghĩa cho từ | ⏳ |
+| Chỉnh sửa từ (thuật ngữ, phiên âm, âm thanh) | ⏳ |
+| Chỉnh sửa nghĩa từ (loại từ vựng, định nghĩa) | ⏳ |
+| Xóa từ (cascade xóa tất cả nghĩa) | ⏳ |
+| Xóa nghĩa của từ | ⏳ |
+
+---
+
+### Content Service
+**Entities:**
+- Blog
+- BlogHistory
+- Squad
+- SquadMember
+- BlogSquad
+
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| CRUD Blog | ⏳ |
+| Quản lý phiên bản (BlogHistory) | ⏳ |
+| CRUD Squad (Chủ đề) | ⏳ |
+| Tham gia / Rời Squad | ⏳ |
+| Gắn Blog vào Squad | ⏳ |
+
+---
+
+### Media Service
+**Entities:**
+- Series
+- Video
+- VideoTranscript
+
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| Tải lên và mã hóa video (nhiều định dạng) | ⏳ |
+| Streaming video (HLS/DASH) | ⏳ |
+| CRUD Series | ⏳ |
+| Quản lý video trong series | ⏳ |
+| Quản lý phụ đề (VideoTranscript) | ⏳ |
+
+---
+
+### Learning Service
+**Entities:**
+- UserVocabulary
+- VideoProgress
+
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| Theo dõi tiến độ từ vựng (levelMaster, lastestPracticeAt, latestStatus) | ⏳ |
+| Cung cấp API luyện tập | ⏳ |
+| Theo dõi tiến độ xem video (latestPosition, completed) | ⏳ |
+
+---
+
+### Gamification Service
+**Entities:**
+- (Định nghĩa entities...)
+
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| (Định nghĩa chức năng...) | ⏳ |
+
+---
+
+### Notification Service
+**Entities:**
+- Notification
+
+**Nhiệm vụ:**
+| Chức năng | Trạng thái |
+|----------|-----------|
+| Lắng nghe và tạo bảng ghi thông báo | ⏳ |
+| Gửi thông báo đến user real-time | ⏳ |
 
 ---
 
@@ -125,4 +267,9 @@ pnpm add -D @types/winston
 # Create LoggerModule as global module
 ```
 
+
+# Architecture Diagram
+`v0` <br>
+<br>
+![architecture-diagram](./assets/architecture_diagram_v0.png)
 
